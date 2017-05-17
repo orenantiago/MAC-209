@@ -13,7 +13,9 @@ def timestamps(filename):
             t1 = float(row[0])
             t2 = float(row[1])
             t3 = float(row[2])
-            times.append([t1, t2, t3])
+            times.append(t1)
+            times.append(t2)
+            times.append(t3)
         first_line = False
     return times
 
