@@ -38,7 +38,7 @@ def accel_run(times):
     return accel
 
 
-times = timestamps("mruv/experimento2")
+times = timestamps("mruv/experimento5")
 acc = accel_run(times)
 print(times)
 print(acc)
