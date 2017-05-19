@@ -19,4 +19,26 @@ def timestamps(filename):
         first_line = False
     return times
 
-print(timestamps("mruv/experimento1"))
+#retorna a aceleração de uma descida, recebendo o vetor de tempos dela
+def accel_run(times):
+    tf_to = 0 # tf - to
+
+    # Matriz dos tempos
+    delta_s = 10
+
+    delta_t = times[2] - times[1]
+    tf_to += delta_t/2
+    vf = delta_s/delta_t
+
+    delta_t = times[1] - times[0]
+    tf_to += delta_t/2
+    vo = delta_s/delta_t
+    accel = (vf-vo)/tf_to
+
+    return accel
+
+
+times = timestamps("mruv/experimento2")
+acc = accel_run(times)
+print(times)
+print(acc)
