@@ -45,7 +45,11 @@ def accel_run(times):
 #retorna v0 + g * seno_da_inclinação_da_rampa
 #def dVelocity(v0, dt):
 #    return v0 + 9.8 * 0.0784591 * dt
+
 def dVelocity(v0):
+    #a função retorna a aceleração do momento,
+    #utilizando g = 9.8, seno da inclinação = 0.0784591 e a força de resistencia = 0.0295/v0
+
     if v0 == 0:
         return  9.8 * 0.0784591
     else:
