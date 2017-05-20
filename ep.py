@@ -37,6 +37,40 @@ def accel_run(times):
 
     return accel
 
+def pendulum_times(filenametoolbox):
+    # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
+    # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
+    times = []
+    first_line = True
+    time_10s = False
+    point_up = 2
+    point_down = -1
+    time_up = time_down = 0
+
+    for row in csv.reader(open(filenametoolbox + str(i) + ".csv", 'rt')):
+        # Firulas/gambiarras iniciais
+        if first_line == True:
+            first_line = False
+        elif time_10s == False:
+            if float(row[0]) >= 10.0:
+                time_10s = True
+
+        # Análise dos dados propriamente dita
+        if time_10s == True:
+            # Força g
+            g_force = float(row[4])
+
+            # Encontrando o tempo do ponto alto
+            if g_force < 1 and g_force < point_up:
+                point_up = g_force
+
+            # Encontrando o tempo do ponto baixo
+            elif g_force >= 1 and g_force >= point_down:
+                point_down = g_force
+
+            
+
+    return times
 
 times = timestamps("mruv/experimento5")
 acc = accel_run(times)
