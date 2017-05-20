@@ -116,38 +116,53 @@ def eulerRichardson(dt):
 
     return y, v, t
 
-def pendulum_times(filenametoolbox):
+def pendulum_times(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
     times = []
+    
     first_line = True
     time_10s = False
+    start = False
+
+    tmp_point = 0
     point_up = 2
     point_down = -1
     time_up = time_down = 0
 
-    for row in csv.reader(open(filenametoolbox + str(i) + ".csv", 'rt')):
+    for row in csv.reader(open("experimento" + str(filenumber) + ".csv", 'rt')):
         # Firulas/gambiarras iniciais
         if first_line == True:
             first_line = False
         elif time_10s == False:
-            if float(row[0]) >= 10.0:
+            if float(row[0]) >= 10.0 and float(row[4]) < 1:
                 time_10s = True
+                point = 0
 
         # Análise dos dados propriamente dita
         if time_10s == True:
             # Força g
             g_force = float(row[4])
 
-            # Encontrando o tempo do ponto alto
-            if g_force < 1 and g_force < point_up:
-                point_up = g_force
+            if g_force < 1:
+                point = 1
+                if (tmp_point != point):
+                    times.append(point_up)
+                    point_up = 2
+            else:
+                point = 0
+                if (tmp_point != point):
+                    times.append(point_down)
+                    point_down = -1
 
-            # Encontrando o tempo do ponto baixo
-            elif g_force >= 1 and g_force >= point_down:
-                point_down = g_force
+            if point == 1:
+                g_force < point_up:
+                    point_up = g_force
+            else:
+                g_force > point_down:
+                    point_down = g_force
 
-
+            tmp_point = point
 
     return times
 
