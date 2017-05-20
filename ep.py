@@ -39,20 +39,20 @@ def accel_run(times):
 
     return accel
 
-def eulerPosition(y0, v0, dt):
-    return y0 + v0 * dt
+#def eulerPosition(y0, v0, dt):#
+#    return y0 + v0 * dt
 
 #retorna v0 + g * seno_da_inclinação_da_rampa
-#def eulerVelocity(v0, dt):
+#def dVelocity(v0, dt):
 #    return v0 + 9.8 * 0.0784591 * dt
-def eulerVelocity(v0, acc, dt):
+def dVelocity(v0):
     if v0 == 0:
-        return v0 + 9.8 * 0.0784591 * dt
+        return  9.8 * 0.0784591
     else:
-        return v0 + (9.8 * 0.0784591 - 0.0295/v0) * dt
+        return  9.8 * 0.0784591 - 0.0295/v0
 
 
-def euler(acc, dt):
+def euler(dt):
     t0 = 0
     y = []
     v = []
@@ -64,14 +64,14 @@ def euler(acc, dt):
 
     while(y[i] < 30):
         t0 += dt
-        y.append(eulerPosition(y[i], v[i], dt))
-        v.append(eulerVelocity(v[i], acc, dt))
+        y.append(y[i] + v[i] * dt)
+        v.append(v[i] + dVelocity(v[i]) * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-def eulerCromer (acc, dt):
+def eulerCromer (dt):
     t0 = 0
     i = 0
     v = []
@@ -83,13 +83,34 @@ def eulerCromer (acc, dt):
 
     while(y[i] < 30):
         t0 += dt
-        v.append(eulerVelocity(v[i], acc, dt))
-        y.append(eulerPosition(y[i], v[i + 1], dt))
+        v.append(v[i] + dt * dVelocity(v[i]))
+        y.append(y[i] + v[i + 1] * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
+def eulerRichardson(dt):
+    v = []
+    y = []
+    t = []
+    i = 0
+    t0 = 0
+    dtmid = dt / 2
+    v.append(0)
+    y.append(0)
+    t.append(t0)
+
+    while y[i] < 30:
+        t0 += dt
+        vmid = v[i] + dtmid * dVelocity(v[i])
+        ymid = y[i] + dtmid * v[i]
+        v.append(v[i] + dt * dVelocity(v[i]))
+        y.append(y[i] + dt * vmid)
+        t.append(t0)
+        i += 1
+
+    return y, v, t
 
 def pendulum_times(filenametoolbox):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
@@ -131,6 +152,7 @@ times = timestamps(5)
 acc = accel_run(times)
 y,v,t = euler(acc, 0.05)
 y1,v1,t1 = eulerCromer(acc, 0.05)
+y2, v2, t2 = eulerRichardson(acc, 0.05)
 plt.plot(times, space, "bo", t, y, "r", t1, y1, 'g')
 plt.show()
 #print(times)
