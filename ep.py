@@ -116,6 +116,8 @@ def eulerRichardson(dt):
 
     return y, v, t
 
+import csv
+
 def pendulum_times(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
@@ -125,12 +127,12 @@ def pendulum_times(filenumber):
     time_10s = False
     start = False
 
-    tmp_point = 0
+    tmp_point = 1
     point_up = 2
     point_down = -1
     time_up = time_down = 0
 
-    for row in csv.reader(open("experimento" + str(filenumber) + ".csv", 'rt')):
+    for row in csv.reader(open("pendulo/experimento" + str(filenumber) + ".csv", 'rt')):
         # Firulas/gambiarras iniciais
         if first_line == True:
             first_line = False
@@ -147,20 +149,22 @@ def pendulum_times(filenumber):
             if g_force < 1:
                 point = 1
                 if (tmp_point != point):
-                    times.append(point_up)
+                    times.append(time_up)
                     point_up = 2
             else:
                 point = 0
                 if (tmp_point != point):
-                    times.append(point_down)
+                    times.append(time_down)
                     point_down = -1
 
             if point == 1:
-                g_force < point_up:
-                    point_up = g_force
+                if g_force < point_up:
+            
+                    time_up = float(row[0])
             else:
-                g_force > point_down:
+                if g_force > point_down:
                     point_down = g_force
+                    time_down= float(row[0])
 
             tmp_point = point
 
