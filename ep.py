@@ -3,21 +3,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-#lê o arquivo de tempos do mruv
-def timestamps(filename):
+#lê o o numero do arquivo de de tempos do mruv
+def timestamps(filenumber):
     times = []
     first_line = True
-    i = 0
-    for row in csv.reader(open(filename + '.csv', 'rt')):
-        if first_line == False:
-            t1 = float(row[0])
-            t2 = float(row[1])
-            t3 = float(row[2])
-            times.append(t1)
-            times.append(t2)
-            times.append(t3)
-        first_line = False
-    return times
+    for i in range(1,5):
+        for row in csv.reader(open(experimento + str(filenumber) + '.csv', 'rt')):
+            if first_line == False:
+                t1 = float(row[0])
+                t2 = float(row[1])
+                t3 = float(row[2])
+                times.append(t1)
+                times.append(t2)
+                times.append(t3)
+            first_line = False
+        return times
 
 #retorna a aceleração de uma descida, recebendo o vetor de tempos dela
 def accel_run(times):
@@ -68,7 +68,7 @@ def pendulum_times(filenametoolbox):
             elif g_force >= 1 and g_force >= point_down:
                 point_down = g_force
 
-            
+
 
     return times
 
