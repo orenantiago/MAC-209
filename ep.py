@@ -197,35 +197,77 @@ def pendulumTimesExperimental(filenumber):
     points = []
     first_line = True
     weight = 9.8 * 0.27
-
+    before10s = True
+    timesnew = []
+    pointsnew = []
     for row in csv.reader(open("pendulo/experimento" + str(filenumber) + ".csv", 'rt')):
         # Firulas/gambiarras iniciais
         if first_line == True:
             first_line = False
-        else:
+        elif before10s == True:
+            if float(row[0]) >= 10.0:
+                before10s = False
+        elif float(row[0]) <= 130.0:
             times.append(float(row[0]))
-            point = math.degrees(math.asin(float(row[4])/weight))
+            point = float(row[4])
             points.append(point)
-    return times, points
+        else:
+            break
+
+    dt = 0.5
+    diff = 0
+    downFound = False
+    upFound = True
+    searches = 0
+    i = 0
+    j = 0
+    while i < len(times) and j < len(times):
+
+        j = i + 1
+        while diff <= dt and j < len(times):
+            if points[i] > points[j]:
+                i = j
+                diff = 0
+            else:
+                diff = times[j] - times[i]
+                j += 1
+        timesnew.append(times[i])
+        pointsnew.append(points[i])
+        diff = 0
+
+        j = i + 1
+        while diff <= dt and j < len(times):
+            if points[i] < points[j]:
+                i = j
+                diff = 0
+            else:
+                diff = times[j] - times[i]
+                j += 1
+
+        timesnew.append(times[i])
+        pointsnew.append(points[i])
+        diff = 0
+
+    return timesnew, pointsnew
 
 
 aa,bb = pendulumTimes(1)
+#
+# angles = []
+# times = []
+#
+# osc = 0
+#
+# for i in range(0,len(bb),2):
+#     ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
+#     if (ang > 4.5):
+#         angles.append(((-1)**(osc))*ang)
+#         times.append(aa[i])
+#         angles.append(0)
+#         times.append(aa[i+1])
+#         osc+=1
 
-angles = []
-times = []
-
-osc = 0
-
-for i in range(0,len(bb),2):
-    ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
-    if (ang > 4.5):
-        angles.append(((-1)**(osc))*ang)
-        times.append(aa[i])
-        angles.append(0)
-        times.append(aa[i+1])
-        osc+=1
-
-plt.plot(times,angles,"bo-")
+plt.plot(aa,bb,"bo-")
 plt.ylabel('angulo (°)')
 plt.xlabel('tempo (s)')
 plt.show()
