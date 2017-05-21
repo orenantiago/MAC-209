@@ -58,52 +58,55 @@ def accMruv(v0):
 
 #implementar aceleração do pendulo para algoritmos numéricos
 #def accPendulum():
+def accPendulum(y, v0):
+    return (- 9.8 * y) / 0.85 + 0.02*v0**2
 
-def euler(dt, movement):
+def euler(y0, dt, movement):
     t0 = 0
     y = []
     v = []
     t = []
-    y.append(0)
+    y.append(y0)
     v.append(0)
     t.append(t0)
     i = 0
 
-    while(y[i] < 30):
+    while(t[i] < 120):
         t0 += dt
         y.append(y[i] + v[i] * dt)
         if(movement == "mruv"):
             v.append(v[i] + accMruv(v[i]) * dt)
-        # else:
-        #     v.append(v[i] + accPendulum(v[i]) * dt)
+        else:
+             v.append(v[i] + accPendulum(y[i], v[i]) * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-def eulerCromer (dt, movement):
+def eulerCromer (y0, dt, movement):
     t0 = 0
     i = 0
     v = []
     y = []
     t = []
-    y.append(0)
+    y.append(y0)
     v.append(0)
     t.append(t0)
 
-    while(y[i] < 30):
+    while(t[i] < 120):
         t0 += dt
         if(movement == "mruv"):
             v.append(v[i] + dt * accMruv(v[i]))
-        # else:
-        #     v.append(v[i] + dt * accPendulum(v[i]))
+        else:
+            v.append(v[i] + dt * accPendulum(y[i], v[i]))
+            print(v[i])
         y.append(y[i] + v[i + 1] * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-def eulerRichardson(dt, movement):
+def eulerRichardson(y0, dt, movement):
     v = []
     y = []
     t = []
@@ -111,17 +114,17 @@ def eulerRichardson(dt, movement):
     t0 = 0
     dtmid = dt / 2
     v.append(0)
-    y.append(0)
+    y.append(y0)
     t.append(t0)
 
-    while y[i] < 30:
+    while t[i] < 130:
         t0 += dt
         if movement == "mruv":
             vmid = v[i] + dtmid * accMruv(v[i])
             v.append(v[i] + dt * accMruv(v[i]))
-        # else:
-        #     vmid = v[i] + dtmid * accPendulum(v[i])
-        #     v.append(v[i] + dt * accPendulum(v[i]))
+        else:
+            vmid = v[i] + dtmid * accPendulum(y[i], v[i])
+            v.append(v[i] + dt * accPendulum(y[i], v[i]))
         ymid = y[i] + dtmid * v[i]
         y.append(y[i] + dt * vmid)
         t.append(t0)
@@ -268,7 +271,8 @@ for i in range(0,len(bb),2):
         times.append(aa[i+1])
         osc+=1
 
-plt.plot(times, angles,"bo-")
+y,v,t = eulerCromer(30, 0.05, "pendulo")
+plt.plot(times, angles,"bo", t, y, "r")
 plt.ylabel('angulo (°)')
 plt.xlabel('tempo (s)')
 plt.show()
