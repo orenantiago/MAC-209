@@ -6,8 +6,9 @@ import csv
 
 #lê o o numero do arquivo de de tempos do mruv
 
-def timestamps(filenumber):
+def MruvTimes(filenumber):
     times = []
+    spaces = [10, 20, 30]
     first_line = True
     for i in range(1,5):
         for row in csv.reader(open("mruv/experimento" + str(filenumber) + '.csv', 'rt')):
@@ -19,10 +20,10 @@ def timestamps(filenumber):
                 times.append(t2)
                 times.append(t3)
             first_line = False
-        return times
+        return times, spaces
 
 #retorna a aceleração de uma descida, recebendo o vetor de tempos dela
-def accel_run(times):
+def accelRun(times):
     tf_to = 0 # tf - to
 
     # Matriz dos tempos
@@ -43,10 +44,10 @@ def accel_run(times):
 #    return y0 + v0 * dt
 
 #retorna v0 + g * seno_da_inclinação_da_rampa
-#def dVelocity(v0, dt):
+#def accMruv(v0, dt):
 #    return v0 + 9.8 * 0.0784591 * dt
 
-def dVelocity(v0):
+def accMruv(v0):
     #a função retorna a aceleração do momento,
     #utilizando g = 9.8, seno da inclinação = 0.0784591 e a força de resistencia = 0.0295/v0
 
@@ -55,8 +56,10 @@ def dVelocity(v0):
     else:
         return  9.8 * 0.0784591 - 0.0295/v0
 
+#implementar aceleração do pendulo para algoritmos numéricos
+#def accPendulum():
 
-def euler(dt):
+def euler(dt, movement):
     t0 = 0
     y = []
     v = []
@@ -69,13 +72,16 @@ def euler(dt):
     while(y[i] < 30):
         t0 += dt
         y.append(y[i] + v[i] * dt)
-        v.append(v[i] + dVelocity(v[i]) * dt)
+        if(movement == "mruv"):
+            v.append(v[i] + accMruv(v[i]) * dt)
+        # else:
+        #     v.append(v[i] + accPendulum(v[i]) * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-def eulerCromer (dt):
+def eulerCromer (dt, movement):
     t0 = 0
     i = 0
     v = []
@@ -87,14 +93,17 @@ def eulerCromer (dt):
 
     while(y[i] < 30):
         t0 += dt
-        v.append(v[i] + dt * dVelocity(v[i]))
+        if(movement == "mruv"):
+            v.append(v[i] + dt * accMruv(v[i]))
+        # else:
+        #     v.append(v[i] + dt * accPendulum(v[i]))
         y.append(y[i] + v[i + 1] * dt)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-def eulerRichardson(dt):
+def eulerRichardson(dt, movement):
     v = []
     y = []
     t = []
@@ -107,18 +116,20 @@ def eulerRichardson(dt):
 
     while y[i] < 30:
         t0 += dt
-        vmid = v[i] + dtmid * dVelocity(v[i])
+        if movement == "mruv":
+            vmid = v[i] + dtmid * accMruv(v[i])
+            v.append(v[i] + dt * accMruv(v[i]))
+        # else:
+        #     vmid = v[i] + dtmid * accPendulum(v[i])
+        #     v.append(v[i] + dt * accPendulum(v[i]))
         ymid = y[i] + dtmid * v[i]
-        v.append(v[i] + dt * dVelocity(v[i]))
         y.append(y[i] + dt * vmid)
         t.append(t0)
         i += 1
 
     return y, v, t
 
-import csv
-
-def pendulum_times(filenumber):
+def pendulumTimes(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
     times = []
@@ -179,7 +190,7 @@ def pendulum_times(filenumber):
         times[i] -= aux
     return times, points
 
-def pendulum_times_experimental(filenumber):
+def pendulumTimesExperimental(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
     times = []
@@ -198,13 +209,13 @@ def pendulum_times_experimental(filenumber):
     return times, points
 
 #space = [10,20,30]
-#times, points = pendulum_times(2)
+times, points = MruvTimes(2)
 #times = timestamps(5)
-#acc = accel_run(times)
-#y,v,t = euler(0.05)
+#acc = accelRun(times)
+y,v,t = euler(0.05, "mruv")
 #y1,v1,t1 = eulerCromer(0.05)
 #y2, v2, t2 = eulerRichardson(0.05)
-#plt.plot(times, points, "b")
-#plt.show()
+plt.plot(times, points, "bo", t,y, "r")
+plt.show()
 #print(times)
 #print(acc)
