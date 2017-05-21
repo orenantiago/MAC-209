@@ -122,7 +122,7 @@ def pendulum_times(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
     times = []
-    
+    points = []
     first_line = True
     time_10s = False
     start = False
@@ -150,33 +150,61 @@ def pendulum_times(filenumber):
                 point = 1
                 if (tmp_point != point):
                     times.append(time_up)
+                    points.append(point_up)
                     point_up = 2
             else:
                 point = 0
                 if (tmp_point != point):
                     times.append(time_down)
+                    points.append(point_down)
                     point_down = -1
 
             if point == 1:
                 if g_force < point_up:
-            
+
                     time_up = float(row[0])
+                    point_up = float(row[4])
             else:
                 if g_force > point_down:
                     point_down = g_force
                     time_down= float(row[0])
+                    point_down = float(row[4])
 
             tmp_point = point
 
-    return times
+    times.pop(0)
+    points.pop(0)
+    aux = times[0]
+    for i in range(len(times)):
+        times[i] -= aux
+    return times, points
 
-space = [10,20,30]
-times = timestamps(5)
-acc = accel_run(times)
-y,v,t = euler(acc, 0.05)
-y1,v1,t1 = eulerCromer(acc, 0.05)
-y2, v2, t2 = eulerRichardson(acc, 0.05)
-plt.plot(times, space, "bo", t, y, "r", t1, y1, 'g')
-plt.show()
+def pendulum_times_experimental(filenumber):
+    # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
+    # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
+    times = []
+    points = []
+    first_line = True
+    weight = 9.8 * 0.27
+
+    for row in csv.reader(open("pendulo/experimento" + str(filenumber) + ".csv", 'rt')):
+        # Firulas/gambiarras iniciais
+        if first_line == True:
+            first_line = False
+        else:
+            times.append(float(row[0]))
+            point = math.degrees(math.asin(float(row[4])/weight))
+            points.append(point)
+    return times, points
+
+#space = [10,20,30]
+#times, points = pendulum_times(2)
+#times = timestamps(5)
+#acc = accel_run(times)
+#y,v,t = euler(0.05)
+#y1,v1,t1 = eulerCromer(0.05)
+#y2, v2, t2 = eulerRichardson(0.05)
+#plt.plot(times, points, "b")
+#plt.show()
 #print(times)
 #print(acc)
