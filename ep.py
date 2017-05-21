@@ -213,7 +213,9 @@ def pendulumTimesExperimental(filenumber):
             points.append(point)
         else:
             break
-
+    aux = times[0]
+    for i in range(len(times)):
+        times[i] -= aux
     dt = 0.5
     diff = 0
     downFound = False
