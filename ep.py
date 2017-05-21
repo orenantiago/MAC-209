@@ -209,10 +209,6 @@ def pendulumTimesExperimental(filenumber):
     return times, points
 
 
-
-aa = []
-bb = []
-
 aa,bb = pendulumTimes(1)
 
 angles = []
@@ -221,10 +217,12 @@ times = []
 for i in range(0,len(bb),2):
     ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
     if (ang > 4.5):
-        angles.append(ang)
+        angles.append(((-1)**(i//2))*ang)
         times.append(aa[i])
+        angles.append(0)
+        times.append(aa[i+1])
 
-plt.plot(times,angles,"b")
+plt.plot(times,angles,"bo-")
 plt.ylabel('angulo (°)')
 plt.xlabel('tempo (s)')
 plt.show()
