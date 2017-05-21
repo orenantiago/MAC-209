@@ -208,14 +208,35 @@ def pendulumTimesExperimental(filenumber):
             points.append(point)
     return times, points
 
+
+
+aa = []
+bb = []
+
+aa,bb = pendulumTimes(1)
+
+angles = []
+times = []
+
+for i in range(0,len(bb),2):
+    ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
+    if (ang > 4.5):
+        angles.append(ang)
+        times.append(aa[i])
+
+plt.plot(times,angles,"b")
+plt.ylabel('angulo (°)')
+plt.xlabel('tempo (s)')
+plt.show()
+
 #space = [10,20,30]
-times, points = MruvTimes(2)
+# times, points = MruvTimes(2)
 #times = timestamps(5)
 #acc = accelRun(times)
-y,v,t = euler(0.05, "mruv")
+# y,v,t = euler(0.05, "mruv")
 #y1,v1,t1 = eulerCromer(0.05)
 #y2, v2, t2 = eulerRichardson(0.05)
-plt.plot(times, points, "bo", t,y, "r")
-plt.show()
+# plt.plot(times, points, "bo", t,y, "r")
+# plt.show()
 #print(times)
 #print(acc)
