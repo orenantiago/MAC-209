@@ -196,7 +196,6 @@ def pendulumTimesExperimental(filenumber):
     times = []
     points = []
     first_line = True
-    weight = 9.8 * 0.27
     before10s = True
     timesnew = []
     pointsnew = []
@@ -216,7 +215,7 @@ def pendulumTimesExperimental(filenumber):
     aux = times[0]
     for i in range(len(times)):
         times[i] -= aux
-    dt = 0.5
+    dt = 0.55
     diff = 0
     downFound = False
     upFound = True
@@ -253,23 +252,23 @@ def pendulumTimesExperimental(filenumber):
     return timesnew, pointsnew
 
 
-aa,bb = pendulumTimes(1)
-#
-# angles = []
-# times = []
-#
-# osc = 0
-#
-# for i in range(0,len(bb),2):
-#     ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
-#     if (ang > 4.5):
-#         angles.append(((-1)**(osc))*ang)
-#         times.append(aa[i])
-#         angles.append(0)
-#         times.append(aa[i+1])
-#         osc+=1
+aa,bb = pendulumTimesExperimental(1)
 
-plt.plot(aa,bb,"bo-")
+angles = []
+times = []
+
+osc = 0
+
+for i in range(0,len(bb),2):
+    ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
+    if (ang > 4.5):
+        angles.append(((-1)**(osc))*ang)
+        times.append(aa[i])
+        angles.append(0)
+        times.append(aa[i+1])
+        osc+=1
+
+plt.plot(times, angles,"bo-")
 plt.ylabel('angulo (°)')
 plt.xlabel('tempo (s)')
 plt.show()
