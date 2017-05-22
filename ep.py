@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import math
 
 
 #lê o o numero do arquivo de de tempos do mruv
@@ -58,8 +59,8 @@ def accMruv(v0):
 
 #implementar aceleração do pendulo para algoritmos numéricos
 #def accPendulum():
-def accPendulum(y, v0):
-    return (- 9.8 * y) / 0.85 + 0.02*v0**2
+def accPendulum(teta, v0):
+    return (- 9.8 * teta) / 0.85 - 1.04*(teta)**
 
 def euler(y0, dt, movement):
     t0 = 0
@@ -132,68 +133,11 @@ def eulerRichardson(y0, dt, movement):
 
     return y, v, t
 
+
+def degtorad(deg):
+    return (2*math.pi*deg/360)
+
 def pendulumTimes(filenumber):
-    # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
-    # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
-    times = []
-    points = []
-    first_line = True
-    time_10s = False
-    start = False
-
-    tmp_point = 1
-    point_up = 2
-    point_down = -1
-    time_up = time_down = 0
-
-    for row in csv.reader(open("pendulo/experimento" + str(filenumber) + ".csv", 'rt')):
-        # Firulas/gambiarras iniciais
-        if first_line == True:
-            first_line = False
-        elif time_10s == False:
-            if float(row[0]) >= 10.0 and float(row[4]) < 1:
-                time_10s = True
-                point = 0
-
-        # Análise dos dados propriamente dita
-        if time_10s == True:
-            # Força g
-            g_force = float(row[4])
-
-            if g_force < 1:
-                point = 1
-                if (tmp_point != point):
-                    times.append(time_up)
-                    points.append(point_up)
-                    point_up = 2
-            else:
-                point = 0
-                if (tmp_point != point):
-                    times.append(time_down)
-                    points.append(point_down)
-                    point_down = -1
-
-            if point == 1:
-                if g_force < point_up:
-
-                    time_up = float(row[0])
-                    point_up = float(row[4])
-            else:
-                if g_force > point_down:
-                    point_down = g_force
-                    time_down= float(row[0])
-                    point_down = float(row[4])
-
-            tmp_point = point
-
-    times.pop(0)
-    points.pop(0)
-    aux = times[0]
-    for i in range(len(times)):
-        times[i] -= aux
-    return times, points
-
-def pendulumTimesExperimental(filenumber):
     # Função que recebe um arquivo "filenametoolbox" contendo dados do acelerômetro
     # e retorna os tempos nos pontos altos e baixos da trajetória do pêndulo.
     times = []
@@ -252,31 +196,29 @@ def pendulumTimesExperimental(filenumber):
         pointsnew.append(points[i])
         diff = 0
 
+    angles = []
+    times = []
+
+    osc = 0
+
+    for i in range(0,len(pointsnew),2):
+        ang = (math.pi / 6) * (pointsnew[i+1]-pointsnew[i])/(pointsnew[1]-pointsnew[0])
+        if (ang > degtorad(4.5)):
+            angles.append(((-1)**(osc))*ang)
+            times.append(timesnew[i])
+            angles.append(0)
+            times.append(timesnew[i+1])
+            osc+=1
+
+    y,v,t = eulerCromer(math.pi/6, 0.05, "pendulo")
+    plt.plot(times, angles,"bo",t,y,"r")
+    plt.ylabel('angulo (°)')
+    plt.xlabel('tempo (s)')
+    plt.show()
+
     return timesnew, pointsnew
 
-
-aa,bb = pendulumTimesExperimental(1)
-
-angles = []
-times = []
-
-osc = 0
-
-for i in range(0,len(bb),2):
-    ang = 30*(bb[i+1]-bb[i])/(bb[1]-bb[0])
-    if (ang > 4.5):
-        angles.append(((-1)**(osc))*ang)
-        times.append(aa[i])
-        angles.append(0)
-        times.append(aa[i+1])
-        osc+=1
-
-y,v,t = eulerCromer(30, 0.05, "pendulo")
-plt.plot(times, angles,"bo", t, y, "r")
-plt.ylabel('angulo (°)')
-plt.xlabel('tempo (s)')
-plt.show()
-
+pendulumTimes(1)
 #space = [10,20,30]
 # times, points = MruvTimes(2)
 #times = timestamps(5)
