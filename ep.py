@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import csv
 import math
 
@@ -237,10 +238,24 @@ def main():
         eulerS, eulerV, eulerT = euler(0, dt, "mruv")
         cromerS, cromerV, cromerT = eulerCromer(0, dt, "mruv")
         fig = plt.figure(1)
-        #plt.subplot(221)
-        plt.plot(tempo, espaco, 'go', eulerT, eulerS, 'b', cromerT, cromerS, 'r')
+
+        plt.subplot(221)
+        plt.title("x(t)")
+        plt.plot(tempo, espaco, 'o', label='Oficial')
+        plt.plot(eulerT, eulerS, label='Euler')
+        plt.plot(cromerT, cromerS, label='Euler-Cromer')
         plt.ylabel('Espaço (m)')
         plt.xlabel('Tempo (s)')
+        plt.legend()
+
+        plt.subplot(222)
+        plt.title("v(t)")
+        plt.plot(eulerT, eulerV, label='Euler')
+        plt.plot(cromerT, cromerV, label='Euler-Cromer')
+        plt.ylabel('Velocidade (m/s)')
+        plt.xlabel('Tempo(s)')
+        plt.legend()
+
         plt.savefig('corrida' + str(i))
         plt.close(fig)
     print("finalizado.")
