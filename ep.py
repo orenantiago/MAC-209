@@ -7,7 +7,7 @@ import math
 
 #lê o o numero do arquivo de de tempos do mruv
 
-def MruvTimes(filenumber):
+def MruvTimesSpaces(filenumber):
     times = []
     spaces = [10, 20, 30]
     first_line = True
@@ -60,7 +60,7 @@ def accMruv(v0):
 #implementar aceleração do pendulo para algoritmos numéricos
 #def accPendulum():
 def accPendulum(teta, v0):
-    return (- 9.8 * teta) / 0.85 - 1.04*(teta)**
+    return (- 9.8 * teta) / 0.85 - 1.04*(teta)**2
 
 def euler(y0, dt, movement):
     t0 = 0
@@ -71,16 +71,20 @@ def euler(y0, dt, movement):
     v.append(0)
     t.append(t0)
     i = 0
-
-    while(t[i] < 120):
-        t0 += dt
-        y.append(y[i] + v[i] * dt)
-        if(movement == "mruv"):
+    if(movement == "mruv"):
+        while(y[i] <= 30):
+            t0 += dt
+            y.append(y[i] + v[i] * dt)
             v.append(v[i] + accMruv(v[i]) * dt)
-        else:
-             v.append(v[i] + accPendulum(y[i], v[i]) * dt)
-        t.append(t0)
-        i += 1
+            t.append(t0)
+            i += 1
+    else:
+        while(t[i] < 120):
+            t0 += dt
+            y.append(y[i] + v[i] * dt)
+            v.append(v[i] + accPendulum(y[i], v[i]) * dt)
+            t.append(t0)
+            i += 1
 
     return y, v, t
 
@@ -94,16 +98,20 @@ def eulerCromer (y0, dt, movement):
     v.append(0)
     t.append(t0)
 
-    while(t[i] < 120):
-        t0 += dt
-        if(movement == "mruv"):
+    if(movement == "mruv"):
+        while(y[i] <= 30):
+            t0 += dt
             v.append(v[i] + dt * accMruv(v[i]))
-        else:
+            y.append(y[i] + v[i + 1] * dt)
+            t.append(t0)
+            i += 1
+    else:
+        while(t[i] < 120):
+            t0 += dt
             v.append(v[i] + dt * accPendulum(y[i], v[i]))
-            print(v[i])
-        y.append(y[i] + v[i + 1] * dt)
-        t.append(t0)
-        i += 1
+            y.append(y[i] + v[i + 1] * dt)
+            t.append(t0)
+            i += 1
 
     return y, v, t
 
@@ -133,8 +141,8 @@ def eulerRichardson(y0, dt, movement):
 
     return y, v, t
 
-
 def degtorad(deg):
+    #transforma graus em radianos
     return (2*math.pi*deg/360)
 
 def pendulumTimes(filenumber):
@@ -218,15 +226,23 @@ def pendulumTimes(filenumber):
 
     return timesnew, pointsnew
 
-pendulumTimes(1)
-#space = [10,20,30]
-# times, points = MruvTimes(2)
-#times = timestamps(5)
-#acc = accelRun(times)
-# y,v,t = euler(0.05, "mruv")
-#y1,v1,t1 = eulerCromer(0.05)
-#y2, v2, t2 = eulerRichardson(0.05)
-# plt.plot(times, points, "bo", t,y, "r")
-# plt.show()
-#print(times)
-#print(acc)
+def main():
+    dt = float(input("Informe dt:\n"))
+    print("Analisando experimento da rampa...")
+    corridas = []
+    acelCorridas = []
+    for i in range(1, 6):
+        tempo, espaco = MruvTimesSpaces(i)
+        acelCorrida = accelRun(tempo)
+        eulerS, eulerV, eulerT = euler(0, dt, "mruv")
+        cromerS, cromerV, cromerT = eulerCromer(0, dt, "mruv")
+        fig = plt.figure(1)
+        #plt.subplot(221)
+        plt.plot(tempo, espaco, 'go', eulerT, eulerS, 'b', cromerT, cromerS, 'r')
+        plt.ylabel('Espaço (m)')
+        plt.xlabel('Tempo (s)')
+        plt.savefig('corrida' + str(i))
+        plt.close(fig)
+    print("finalizado.")
+if __name__ == '__main__':
+    main()
