@@ -68,14 +68,19 @@ def euler(y0, dt, movement):
     y = []
     v = []
     t = []
+    a = []
     y.append(y0)
     v.append(0)
     t.append(t0)
     i = 0
     if(movement == "mruv"):
+        a.append(accMruv(0))
+        # print(a)
         while(y[i] <= 30):
             t0 += dt
             y.append(y[i] + v[i] * dt)
+            a.append(accMruv(v[i]))
+
             v.append(v[i] + accMruv(v[i]) * dt)
             t.append(t0)
             i += 1
@@ -87,22 +92,27 @@ def euler(y0, dt, movement):
             t.append(t0)
             i += 1
 
-    return y, v, t
+    # print(len(a))
+    # print(len(t))
+    return y, v, a, t
 
 def eulerCromer (y0, dt, movement):
     t0 = 0
     i = 0
     v = []
     y = []
+    a = []
     t = []
     y.append(y0)
     v.append(0)
     t.append(t0)
 
     if(movement == "mruv"):
+        a.append(accMruv(0))
         while(y[i] <= 30):
             t0 += dt
-            v.append(v[i] + dt * accMruv(v[i]))
+            a.append(accMruv(v[i]))
+            v.append(v[i] + dt * a[i + 1])
             y.append(y[i] + v[i + 1] * dt)
             t.append(t0)
             i += 1
@@ -114,7 +124,7 @@ def eulerCromer (y0, dt, movement):
             t.append(t0)
             i += 1
 
-    return y, v, t
+    return y, v, a, t
 
 def eulerRichardson(y0, dt, movement):
     v = []
@@ -235,10 +245,11 @@ def main():
     for i in range(1, 6):
         tempo, espaco = MruvTimesSpaces(i)
         acelCorrida = accelRun(tempo)
-        eulerS, eulerV, eulerT = euler(0, dt, "mruv")
-        cromerS, cromerV, cromerT = eulerCromer(0, dt, "mruv")
+        eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
+        cromerS, cromerV, cromerA, cromerT = eulerCromer(0, dt, "mruv")
         fig = plt.figure(1)
 
+        # print(len(eulerT))
         plt.subplot(221)
         plt.title("x(t)")
         plt.plot(tempo, espaco, 'o', label='Oficial')
@@ -247,7 +258,6 @@ def main():
         plt.ylabel('Espaço (m)')
         plt.xlabel('Tempo (s)')
         plt.legend()
-
         plt.subplot(222)
         plt.title("v(t)")
         plt.plot(eulerT, eulerV, label='Euler')
@@ -256,7 +266,15 @@ def main():
         plt.xlabel('Tempo(s)')
         plt.legend()
 
-        plt.savefig('corrida' + str(i))
+        plt.subplot(223)
+        plt.title("a(t)")
+        plt.plot(eulerT, eulerA, label='Euler')
+        plt.plot(cromerT, cromerA, label='EulerCromer')
+        plt.ylabel('Aceleração (m/s²)')
+        plt.xlabel('Tempo (s)')
+        plt.legend()
+
+        plt.savefig('rampa' + str(i))
         plt.close(fig)
     print("finalizado.")
 if __name__ == '__main__':
