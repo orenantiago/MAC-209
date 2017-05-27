@@ -62,8 +62,6 @@ def accMruv(v0):
 #def accPendulum(): 1.04
 def accPendulum(teta, v0):
     print(teta)
-    print ("ret ", (- 9.8 * teta) / 0.85 - 0.002*(teta)**2)
-
     return (- 9.8 * teta) / 0.85 - 0.002*(teta)**2
 
 def euler(y0, dt, movement):
