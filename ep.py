@@ -127,7 +127,42 @@ def accMruv(v0):
 # massa do pendulo = 0.85kg
 # coeficiente de resistencia do ar = 1.5
 def accPendulum(y, v0):
-    return (- 9.8 * y) / 0.85 + 1.5*v0**2
+    return (- g() * y) / 0.85 + 1.5*v0**2
+
+# recebe o espaço inicial y0, dt e o tipo de movimento movement ("pendulum" ou "mruv"),
+# implementa o metodo de euler e retorna vetores de velocidades, acelerações, espaços e tempos
+def euler(y0, dt, movement):
+    t0 = 0
+    y = []
+    v = []
+    t = []
+    a = []
+    y.append(y0)
+    v.append(0)
+    t.append(t0)
+    i = 0
+    if(movement == "mruv"):
+        a.append(accMruv(v[i]))
+        while(y[i] <= 30):
+            t0 += dt
+            y.append(y[i] + v[i] * dt)
+            a.append(accMruv(v[i]))
+
+            v.append(v[i] + a[i + 1] * dt)
+            t.append(t0)
+            i += 1
+    else:
+        a.append(accPendulum(y[i], v[i]))
+        while(t[i] < 120):
+            t0 += dt
+            y.append(y[i] + v[i] * dt)
+            a.append(accPendulum(y[i], v[i]))
+            v.append(v[i] + a[i + 1] * dt)
+            t.append(t0)
+            i += 1
+
+    return y, v, a, t
+
 
 # recebe o espaço inicial y0, dt e o tipo de movimento movement ("pendulum" ou "mruv"),
 # implementa o metodo de Euler-Cromer e retorna vetores de velocidades, acelerações,
@@ -164,52 +199,6 @@ def eulerCromer (y0, dt, movement):
 
     return y, v, a, t
 
-# recebe o espaço inicial y0, dt e o tipo de movimento movement ("pendulum" ou "mruv"),
-# implementa o metodo de Euler-Richardson e retorna vetores de velocidades, acelerações,
-# espaços e tempos
-def eulerRichardson(y0, dt, movement):
-    v = []
-    y = []
-    a = []
-    t = []
-    i = 0
-    t0 = 0
-    dtmid = dt / 2
-    v.append(0)
-    y.append(y0)
-    t.append(t0)
-
-    if movement == "mruv":
-        a.append(accMruv(v[i]))
-        while y[i] <= 30:
-            t0 += dt
-            vmid = v[i] + dtmid * accMruv(v[i])
-            ymid = y[i] + dtmid * vmid
-
-            a.append(accMruv(vmid))
-
-            v.append(v[i] + dt * a[i + 1])
-            y.append(y[i] + dt * vmid)
-            t.append(t0)
-
-            i += 1
-
-    else:
-        a.append(accPendulum(y[i], v[i]))
-        while t[i] < 120:
-            t0 += dt
-            vmid = v[i] + dtmid * accPendulum(y[i], v[i])
-            ymid = y[i] + dtmid * v[i]
-
-            a.append(accPendulum(ymid, vmid))
-
-            v.append(v[i] + dt * a[i + 1])
-            y.append(y[i] + dt * vmid)
-            t.append(t0)
-
-            i += 1
-    return y, v, a, t
-
 # transforma graus em radianos
 def degtorad(deg):
     return (2*math.pi*deg/360)
@@ -219,30 +208,29 @@ def main():
     dt = float(input("Informe dt:\n"))
 
     print("Analisando experimento da rampa...")
-    corridas = []
-    acelCorridas = []
+
     for i in range(1, 6):
         tempo, espaco = MruvTimesSpaces(i)
-        richS, richV, richA, richT = euler(0, dt, "mruv")
+        eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
         fig = plt.figure(1)
 
         plt.subplot(221)
         plt.title("x(t)")
         plt.plot(tempo, espaco, 'o', label='Oficial')
-        plt.plot(richT, richS, label='Euler-Richardson')
+        plt.plot(eulerT, eulerS, label='Euler')
         plt.ylabel('Espaço (m)')
         plt.xlabel('Tempo (s)')
         plt.legend()
         plt.subplot(222)
         plt.title("v(t)")
-        plt.plot(richT, richV, label='Euler-Richardson')
+        plt.plot(eulerT, eulerV, label='Euler')
         plt.ylabel('Velocidade (m/s)')
         plt.xlabel('Tempo(s)')
         plt.legend()
 
         plt.subplot(223)
         plt.title("a(t)")
-        plt.plot(richT, richA, label='Euler-Richardson')
+        plt.plot(eulerT, eulerA, label='Euler')
         plt.ylabel('Aceleração (m/s²)')
         plt.xlabel('Tempo (s)')
         plt.legend()
