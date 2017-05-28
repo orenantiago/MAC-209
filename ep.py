@@ -60,9 +60,11 @@ def accMruv(v0):
 
 #implementar aceleração do pendulo para algoritmos numéricos
 #def accPendulum(): 1.04
-def accPendulum(teta, v0):
-    print(teta)
-    return (- 9.8 * teta) / 0.85 - 0.002*(teta)**2
+def accPendulum(y, v0):
+    return (- 9.8 * y) / 0.85 + 1.5*v0**2
+# def accPendulum(teta, v0):
+#     print(teta)
+#     return (- 9.8 * teta) / 0.85 - 0.002*(teta)**2
 
 def euler(y0, dt, movement):
     t0 = 0
@@ -134,6 +136,7 @@ def eulerCromer (y0, dt, movement):
 def eulerRichardson(y0, dt, movement):
     v = []
     y = []
+    a = []
     t = []
     i = 0
     t0 = 0
@@ -142,20 +145,36 @@ def eulerRichardson(y0, dt, movement):
     y.append(y0)
     t.append(t0)
 
-    while t[i] < 130:
-        t0 += dt
-        if movement == "mruv":
+    if movement == "mruv":
+        a.append(accMruv(v[i]))
+        while y[i] <= 30:
+            t0 += dt
             vmid = v[i] + dtmid * accMruv(v[i])
-            v.append(v[i] + dt * accMruv(v[i]))
-        else:
-            vmid = v[i] + dtmid * accPendulum(y[i], v[i])
-            v.append(v[i] + dt * accPendulum(y[i], v[i]))
-        ymid = y[i] + dtmid * v[i]
-        y.append(y[i] + dt * vmid)
-        t.append(t0)
-        i += 1
+            ymid = y[i] + dtmid * v[i]
 
-    return y, v, t
+            a.append(accMruv(vmid))
+
+            v.append(v[i] + dt * a[i + 1])
+            y.append(y[i] + dt * vmid)
+            t.append(t0)
+
+            i += 1
+
+    else:
+        a.append(accPendulum(y[i], v[i]))
+        while t[i] < 120:
+            t0 += dt
+            vmid = v[i] + dtmid * accPendulum(y[i], v[i])
+            ymid = y[i] + dtmid * v[i]
+
+            a.append(accPendulum(ymid, vmid))
+
+            v.append(v[i] + dt * a[i + 1])
+            y.append(y[i] + dt * vmid)
+            t.append(t0)
+
+            i += 1
+    return y, v, a, t
 
 def degtorad(deg):
     #transforma graus em radianos
@@ -247,64 +266,27 @@ def main():
     print("Analisando experimento da rampa...")
     corridas = []
     acelCorridas = []
-    # for i in range(1, 6):
-    #     tempo, espaco = MruvTimesSpaces(i)
-    #     #acelCorrida = accelRun(tempo)
-    #     eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
-    #     cromerS, cromerV, cromerA, cromerT = eulerCromer(0, dt, "mruv")
-    #     fig = plt.figure(1)
-    #
-    #     # print(len(eulerT))
-    #     plt.subplot(221)
-    #     plt.title("x(t)")
-    #     plt.plot(tempo, espaco, 'o', label='Oficial')
-    #     plt.plot(eulerT, eulerS, label='Euler')
-    #     plt.plot(cromerT, cromerS, label='Euler-Cromer')
-    #     plt.ylabel('Espaço (m)')
-    #     plt.xlabel('Tempo (s)')
-    #     plt.legend()
-    #     plt.subplot(222)
-    #     plt.title("v(t)")
-    #     plt.plot(eulerT, eulerV, label='Euler')
-    #     plt.plot(cromerT, cromerV, label='Euler-Cromer')
-    #     plt.ylabel('Velocidade (m/s)')
-    #     plt.xlabel('Tempo(s)')
-    #     plt.legend()
-    #
-    #     plt.subplot(223)
-    #     plt.title("a(t)")
-    #     plt.plot(eulerT, eulerA, label='Euler')
-    #     plt.plot(cromerT, cromerA, label='EulerCromer')
-    #     plt.ylabel('Aceleração (m/s²)')
-    #     plt.xlabel('Tempo (s)')
-    #     plt.legend()
-    #
-    #     plt.savefig('rampa' + str(i))
-    #     plt.close(fig)
-
-    print("Analisando o experimento do pêndulo...")
-
     for i in range(1, 6):
-        tempo, angulos = pendulumTimesSpaces(i)
-        eulerS, eulerV, eulerA, eulerT = euler(30, dt, "pendulum")
-        cromerS, cromerV, cromerA, cromerT = eulerCromer(30, dt, "pendulum")
-
+        tempo, espaco = MruvTimesSpaces(i)
+        #acelCorrida = accelRun(tempo)
+        eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
+        cromerS, cromerV, cromerA, cromerT = eulerCromer(0, dt, "mruv")
         fig = plt.figure(1)
 
         # print(len(eulerT))
         plt.subplot(221)
-        plt.title("angleº(t)")
-        plt.plot(tempo, angulos, 'o', label='Oficial')
+        plt.title("x(t)")
+        plt.plot(tempo, espaco, 'o', label='Oficial')
         plt.plot(eulerT, eulerS, label='Euler')
         plt.plot(cromerT, cromerS, label='Euler-Cromer')
-        plt.ylabel('angulo (º)')
+        plt.ylabel('Espaço (m)')
         plt.xlabel('Tempo (s)')
         plt.legend()
         plt.subplot(222)
         plt.title("v(t)")
         plt.plot(eulerT, eulerV, label='Euler')
         plt.plot(cromerT, cromerV, label='Euler-Cromer')
-        plt.ylabel('Velocidade (º/s)')
+        plt.ylabel('Velocidade (m/s)')
         plt.xlabel('Tempo(s)')
         plt.legend()
 
@@ -312,11 +294,48 @@ def main():
         plt.title("a(t)")
         plt.plot(eulerT, eulerA, label='Euler')
         plt.plot(cromerT, cromerA, label='EulerCromer')
-        plt.ylabel('Aceleração (º/s²)')
+        plt.ylabel('Aceleração (m/s²)')
         plt.xlabel('Tempo (s)')
         plt.legend()
 
         plt.savefig('rampa' + str(i))
+        plt.close(fig)
+
+    print("Analisando o experimento do pêndulo...")
+
+    for i in range(1, 6):
+        tempo, angulos = pendulumTimesSpaces(i)
+        cromerS, cromerV, cromerA, cromerT = eulerCromer(math.pi/6, dt, "pendulum")
+        richS, richV, richA, richT = eulerRichardson(0.06, dt, "pendulum")
+        fig = plt.figure(1)
+
+        # print(len(eulerT))
+        plt.subplot(221)
+        plt.title("angleº(t)")
+        plt.plot(tempo, angulos, 'o', label='Oficial')
+        plt.plot(richT, richS, label='Euler-Richardson')
+        plt.plot(cromerT, cromerS, label='Euler-Cromer')
+        plt.ylabel('angulo (º)')
+        plt.xlabel('Tempo (s)')
+        plt.legend()
+
+        plt.subplot(222)
+        plt.title("v(t)")
+        plt.plot(richT, richV, label='Euler-Richardson')
+        plt.plot(cromerT, cromerV, label='Euler-Cromer')
+        plt.ylabel('Velocidade (º/s)')
+        plt.xlabel('Tempo(s)')
+        plt.legend()
+
+        plt.subplot(223)
+        plt.title("a(t)")
+        plt.plot(richT, richA, label='Euler-Richardson')
+        plt.plot(cromerT, cromerA, label='EulerCromer')
+        plt.ylabel('Aceleração (º/s²)')
+        plt.xlabel('Tempo (s)')
+        plt.legend()
+
+        plt.savefig('pendulo' + str(i))
         plt.close(fig)
 
     print("Finalizado.")
