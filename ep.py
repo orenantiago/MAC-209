@@ -127,7 +127,10 @@ def accMruv(v0):
 # massa do pendulo = 0.85kg
 # coeficiente de resistencia do ar = 1.5
 def accPendulum(y, v0):
-    return (- g() * y) / 0.85 + 1.5*v0**2
+    if (-g()*y < 0):
+        return (- g() * y) / 0.85 - 0.3*v0**2
+    else:
+        return (- g() * y) / 0.85 + 0.3*v0**2
 
 # recebe o espaço inicial y0, dt e o tipo de movimento movement ("pendulum" ou "mruv"),
 # implementa o metodo de euler e retorna vetores de velocidades, acelerações, espaços e tempos
