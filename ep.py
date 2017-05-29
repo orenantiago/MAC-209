@@ -92,7 +92,7 @@ def pendulumTimesSpaces(filenumber):
 
     for i in range(0,len(pointsnew),2):
         ang = (math.pi / 6) * (pointsnew[i+1]-pointsnew[i])/(pointsnew[1]-pointsnew[0])
-        if (ang > degtorad(4.5)):
+        if (ang > degtorad(3.0)):
             angles.append(((-1)**(osc))*ang)
             times.append(timesnew[i])
             angles.append(0)
@@ -214,6 +214,8 @@ def main():
         eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
         fig = plt.figure(1)
 
+        plt.figure(figsize=(14,14))
+
         plt.subplot(221)
         plt.title("x(t)")
         plt.plot(tempo, espaco, 'o', label='Oficial')
@@ -225,7 +227,7 @@ def main():
         plt.title("v(t)")
         plt.plot(eulerT, eulerV, label='Euler')
         plt.ylabel('Velocidade (m/s)')
-        plt.xlabel('Tempo(s)')
+        plt.xlabel('Tempo (s)')
         plt.legend()
 
         plt.subplot(223)
@@ -245,11 +247,13 @@ def main():
         cromerS, cromerV, cromerA, cromerT = eulerCromer(math.pi/6, dt, "pendulum")
         fig = plt.figure(1)
 
+        plt.figure(figsize=(14,14))
+
         plt.subplot(221)
-        plt.title("angulo(t)")
+        plt.title("ângulo(t)")
         plt.plot(tempo, angulos, 'o', label='Oficial')
         plt.plot(cromerT, cromerS, label='Euler-Cromer')
-        plt.ylabel('angulo (rad)')
+        plt.ylabel('Ângulo (rad)')
         plt.xlabel('Tempo (s)')
         plt.legend()
 
@@ -257,7 +261,7 @@ def main():
         plt.title("v(t)")
         plt.plot(cromerT, cromerV, label='Euler-Cromer')
         plt.ylabel('Velocidade (rad/s)')
-        plt.xlabel('Tempo(s)')
+        plt.xlabel('Tempo (s)')
         plt.legend()
 
         plt.subplot(223)
