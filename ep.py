@@ -138,9 +138,9 @@ def euler(y0, dt, movement):
     t = []
     a = []
     y.append(y0)
-    v.append(0)
+    v.append(0) #duvidoso
     t.append(t0)
-    i = 0
+    i = 0 # índice
     if(movement == "mruv"):
         a.append(accMruv(v[i]))
         while(y[i] <= 30):
@@ -152,14 +152,14 @@ def euler(y0, dt, movement):
             t.append(t0)
             i += 1
     else:
-        a.append(accPendulum(y[i], v[i]))
+        a.append(accPendulum(y[i], v[i])) # to
         while(t[i] < 120):
             t0 += dt
             y.append(y[i] + v[i] * dt)
-            a.append(accPendulum(y[i], v[i]))
-            v.append(v[i] + a[i + 1] * dt)
+            v.append(v[i] + a[i] * dt)
             t.append(t0)
             i += 1
+            a.append(accPendulum(y[i], v[i])) # t1 = to, t2 = t1, t3 = t2, t4 = t3, t5 = t4
 
     return y, v, a, t
 
