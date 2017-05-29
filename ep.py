@@ -212,9 +212,10 @@ def main():
 
     print("Analisando experimento da rampa...")
 
+    eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
+
     for i in range(1, 6):
         tempo, espaco = MruvTimesSpaces(i)
-        eulerS, eulerV, eulerA, eulerT = euler(0, dt, "mruv")
         fig = plt.figure(1)
 
         plt.figure(figsize=(14,14))
@@ -245,9 +246,9 @@ def main():
 
     print("Analisando o experimento do pêndulo...")
 
+    cromerS, cromerV, cromerA, cromerT = eulerCromer(math.pi/6, dt, "pendulum")
     for i in range(1, 6):
         tempo, angulos = pendulumTimesSpaces(i)
-        cromerS, cromerV, cromerA, cromerT = eulerCromer(math.pi/6, dt, "pendulum")
         fig = plt.figure(1)
 
         plt.figure(figsize=(14,14))
