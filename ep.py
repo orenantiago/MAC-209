@@ -119,7 +119,7 @@ def accMruv(v0):
     if v0 == 0:
         return  g() * 0.0784591
     else:
-        return  g() * 0.0784591 - 0.0295/v0
+        return  g() * 0.0784591 - 0.0441/v0
 
 #retorna aceleração do pendulo para algoritmos numéricos,
 # com base na equação do pendulo, utilizando
@@ -208,7 +208,7 @@ def degtorad(deg):
 
 
 def main():
-    dt = float(input("Informe dt:\n"))
+    dt = 0.077
 
     print("Analisando experimento da rampa...")
 
