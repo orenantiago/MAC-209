@@ -36,7 +36,6 @@ def pendulumTimesSpaces(filenumber):
     timesnew = []
     pointsnew = []
     for row in csv.reader(open("pendulo/experimento" + str(filenumber) + ".csv", 'rt')):
-        # Firulas/gambiarras iniciais
         if first_line == True:
             first_line = False
         elif before10s == True:
@@ -99,12 +98,6 @@ def pendulumTimesSpaces(filenumber):
             times.append(timesnew[i+1])
             osc+=1
 
-    # y,v,t = eulerCromer(math.pi/6, 0.05, "pendulo")
-    # plt.plot(times, angles,"bo",t,y,"r")
-    # plt.ylabel('angulo (°)')
-    # plt.xlabel('tempo (s)')
-    # plt.show()
-
     return times, angles
 
 def g():
@@ -141,9 +134,9 @@ def euler(y0, dt, movement):
     t = []
     a = []
     y.append(y0)
-    v.append(0) #duvidoso
+    v.append(0)
     t.append(t0)
-    i = 0 # índice
+    i = 0
     if(movement == "mruv"):
         a.append(accMruv(v[i]))
         while(y[i] <= 30):
@@ -155,14 +148,14 @@ def euler(y0, dt, movement):
             t.append(t0)
             i += 1
     else:
-        a.append(accPendulum(y[i], v[i])) # to
+        a.append(accPendulum(y[i], v[i]))
         while(t[i] < 120):
             t0 += dt
             y.append(y[i] + v[i] * dt)
             v.append(v[i] + a[i] * dt)
             t.append(t0)
             i += 1
-            a.append(accPendulum(y[i], v[i])) # t1 = to, t2 = t1, t3 = t2, t4 = t3, t5 = t4
+            a.append(accPendulum(y[i], v[i]))
 
     return y, v, a, t
 
